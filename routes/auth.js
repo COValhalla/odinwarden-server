@@ -12,4 +12,7 @@ router.post('/logout', auth_controller.logout);
 // POST for register
 router.post('/register', auth_controller.register);
 
+// POST for verify
+router.post('/verify', auth_controller.verify);
+
 module.exports = router;

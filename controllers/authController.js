@@ -4,8 +4,34 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
-exports.login = (req, res) => {
-  res.json('Not implemented yet.');
+exports.login = (req, res, next) => {
+  passport.authenticate(
+    'local',
+    { session: false },
+    function (err, user, info) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(400).json({
+          message: info.message,
+          status: 400,
+        });
+      }
+      req.logIn(user, { session: false }, function (err) {
+        if (err) {
+          return next(err);
+        }
+        // Create JWT
+        const token = jwt.sign(
+          { id: user._id, username: user.username },
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' },
+        );
+        return res.status(200).json({ user, token, status: 200 });
+      });
+    },
+  )(req, res, next);
 };
 
 exports.logout = (req, res) => {};
@@ -70,4 +96,15 @@ exports.register = async (req, res, next) => {
       },
     )(req, res, next);
   }
+};
+
+exports.verify = (req, res) => {
+  const token = req.body.token;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(400).json({ error: err, status: 400 });
+    } else {
+      return res.status(200).json({ decoded, status: 200 });
+    }
+  });
 };
