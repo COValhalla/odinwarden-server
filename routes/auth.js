@@ -15,4 +15,7 @@ router.post('/register', auth_controller.register);
 // POST for verify
 router.post('/verify', auth_controller.verify);
 
+// POST for getting hint
+router.post('/hint', auth_controller.hint);
+
 module.exports = router;

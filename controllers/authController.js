@@ -3,6 +3,8 @@ const Items = require('../models/Items');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 exports.login = (req, res, next) => {
   passport.authenticate(
@@ -107,4 +109,36 @@ exports.verify = (req, res) => {
       return res.status(200).json({ decoded, status: 200 });
     }
   });
+};
+
+exports.hint = async (req, res) => {
+  const user = await User.findOne({ email: req.body.email.toLowerCase() });
+  if (user) {
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
+        clientId: process.env.OAUTH_CLIENTID,
+        clientSecret: process.env.OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+      },
+    });
+    let mailOptions = {
+      from: 'no-reply@odinwarden.com',
+      to: user.email,
+      subject: 'Odinwarden Password Hint',
+      text: `Your password hint is: ${user.hint}`,
+    };
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        return res.status(500).json({ error: err, status: 500 });
+      } else {
+        return res.status(200).json({ info, status: 200 });
+      }
+    });
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
 };
