@@ -3,27 +3,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const LoginSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  url: [String],
-  notes: [String],
-});
-
 const CardSchema = new Schema({
   name: {
     type: String,
-    required: true,
   },
   dateUpdated: {
     type: Date,
@@ -35,7 +17,6 @@ const CardSchema = new Schema({
   },
   cardNumber: {
     type: String,
-    required: true,
   },
   expirationMonth: {
     enum: [
@@ -55,24 +36,13 @@ const CardSchema = new Schema({
   },
   expirationYear: {
     type: Number,
-    required: true,
   },
   cvv: {
     type: Number,
-    required: true,
   },
-  notes: {
+  note: {
     type: String,
   },
 });
 
-const ItemsSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  login: [LoginSchema],
-  card: [CardSchema],
-});
-
-module.exports = Items = mongoose.model('Items', ItemsSchema);
+module.exports = Items = mongoose.model('Cards', CardSchema);

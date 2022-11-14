@@ -1,5 +1,6 @@
 const User = require('../models/User');
-const Items = require('../models/Items');
+const Cards = require('../models/Cards');
+const Logins = require('../models/Logins');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
@@ -117,12 +118,8 @@ exports.hint = async (req, res) => {
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        type: 'OAuth2',
         user: process.env.MAIL_USERNAME,
         pass: process.env.MAIL_PASSWORD,
-        clientId: process.env.OAUTH_CLIENTID,
-        clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
       },
     });
     let mailOptions = {
@@ -138,6 +135,51 @@ exports.hint = async (req, res) => {
         return res.status(200).json({ info, status: 200 });
       }
     });
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
+exports.add_login = async (req, res) => {
+  const user = await User.findOne({ _id: req.body.id });
+  if (user) {
+    const item = new Logins({
+      user: user._id,
+      name: req.body.name,
+      username: req.body.username,
+      password: req.body.password,
+      url: req.body.url,
+      notes: req.body.notes,
+    });
+    const result = await item.save().catch((err) => {
+      res.status(500).json({ error: err, status: 500 });
+    });
+    return res.status(200).json({ result, status: 200 });
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
+exports.add_card = async (req, res) => {
+  const user = await User.findOne({ _id: req.body.id });
+  if (user) {
+    const item = new Cards({
+      user: user._id,
+      name: req.body.name,
+      cardholderName: req.body.cardholdername,
+      cardNumber: req.body.cardnumber,
+      expirationMonth: req.body.expirationonth,
+      expirationYear: req.body.expirationYear,
+      cvv: req.body.cvv,
+      note: req.body.note,
+    });
+
+    try {
+      const result = await item.save();
+      return res.status(200).json({ result, status: 200 });
+    } catch (err) {
+      return res.status(500).json({ error: err, status: 500 });
+    }
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
   }

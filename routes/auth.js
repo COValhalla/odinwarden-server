@@ -18,4 +18,10 @@ router.post('/verify', auth_controller.verify);
 // POST for getting hint
 router.post('/hint', auth_controller.hint);
 
+// POST for adding login
+router.post('/add/item', auth_controller.add_login);
+
+// Post for adding card
+router.post('/add/card', auth_controller.add_card);
+
 module.exports = router;

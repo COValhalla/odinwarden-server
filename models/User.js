@@ -22,9 +22,13 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  items: {
+  logins: {
     type: Schema.Types.ObjectId,
-    ref: 'Items',
+    ref: 'Logins',
+  },
+  cards: {
+    type: Schema.Types.ObjectId,
+    ref: 'Cards',
   },
   createdAt: {
     type: Date,
