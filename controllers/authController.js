@@ -160,6 +160,32 @@ exports.add_login = async (req, res) => {
   }
 };
 
+exports.update_login = async (req, res) => {
+  const user = await User.findOne({
+    _id: req.body.userId,
+  });
+  if (user) {
+    const item = await Logins.findOne({
+      _id: req.body.itemId,
+    });
+    if (item) {
+      item.name = req.body.name;
+      item.username = req.body.username;
+      item.password = req.body.password;
+      item.url = req.body.url;
+      item.note = req.body.note;
+      const result = await item.save().catch((err) => {
+        res.status(500).json({ error: err, status: 500 });
+      });
+      return res.status(200).json({ result, status: 200 });
+    } else {
+      res.status(400).json({ error: 'Item not found.', status: 400 });
+    }
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
 exports.add_card = async (req, res) => {
   const user = await User.findOne({ _id: req.body.id });
   if (user) {
@@ -180,6 +206,35 @@ exports.add_card = async (req, res) => {
       return res.status(200).json({ result, status: 200 });
     } catch (err) {
       return res.status(500).json({ error: err, status: 500 });
+    }
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
+exports.update_card = async (req, res) => {
+  const user = await User.findOne({
+    _id: req.body.userId,
+  });
+  if (user) {
+    const item = await Cards.findOne({
+      _id: req.body.itemId,
+    });
+    if (item) {
+      item.name = req.body.name;
+      item.cardholderName = req.body.cardholdername;
+      item.cardNumber = req.body.cardnumber;
+      item.brand = req.body.brand;
+      item.expirationMonth = req.body.expirationMonth;
+      item.expirationYear = req.body.expirationYear;
+      item.cvv = req.body.cvv;
+      item.note = req.body.note;
+      const result = await item.save().catch((err) => {
+        res.status(500).json({ error: err, status: 500 });
+      });
+      return res.status(200).json({ result, status: 200 });
+    } else {
+      res.status(400).json({ error: 'Item not found.', status: 400 });
     }
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
