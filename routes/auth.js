@@ -21,7 +21,10 @@ router.post('/hint', auth_controller.hint);
 // POST for adding login
 router.post('/add/item', auth_controller.add_login);
 
-// Post for adding card
+// POST for adding card
 router.post('/add/card', auth_controller.add_card);
+
+// POST for getting logins and cards
+router.post('/get-items', auth_controller.get_items);
 
 module.exports = router;
