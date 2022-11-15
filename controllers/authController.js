@@ -186,6 +186,27 @@ exports.update_login = async (req, res) => {
   }
 };
 
+exports.delete_login = async (req, res) => {
+  const user = await User.findOne({
+    _id: req.body.userId,
+  });
+  if (user) {
+    const item = await Logins.findOne({
+      _id: req.body.itemId,
+    });
+    if (item) {
+      const result = await item.delete().catch((err) => {
+        res.status(500).json({ error: err, status: 500 });
+      });
+      return res.status(200).json({ result, status: 200 });
+    } else {
+      res.status(400).json({ error: 'Item not found.', status: 400 });
+    }
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
 exports.add_card = async (req, res) => {
   const user = await User.findOne({ _id: req.body.id });
   if (user) {
@@ -230,6 +251,27 @@ exports.update_card = async (req, res) => {
       item.cvv = req.body.cvv;
       item.note = req.body.note;
       const result = await item.save().catch((err) => {
+        res.status(500).json({ error: err, status: 500 });
+      });
+      return res.status(200).json({ result, status: 200 });
+    } else {
+      res.status(400).json({ error: 'Item not found.', status: 400 });
+    }
+  } else {
+    res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
+exports.delete_card = async (req, res) => {
+  const user = await User.findOne({
+    _id: req.body.userId,
+  });
+  if (user) {
+    const item = await Cards.findOne({
+      _id: req.body.itemId,
+    });
+    if (item) {
+      const result = await item.delete().catch((err) => {
         res.status(500).json({ error: err, status: 500 });
       });
       return res.status(200).json({ result, status: 200 });

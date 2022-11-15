@@ -24,8 +24,14 @@ router.post('/add/item', auth_controller.add_login);
 // PUT for updating login
 router.put('/update/item', auth_controller.update_login);
 
+// DELETE for deleting login
+router.delete('/delete/item', auth_controller.delete_login);
+
 // POST for adding card
 router.post('/add/card', auth_controller.add_card);
+
+// Delete for deleting card
+router.delete('/delete/card', auth_controller.delete_card);
 
 // PUT for updating card
 router.put('/update/card', auth_controller.update_card);
