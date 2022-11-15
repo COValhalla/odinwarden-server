@@ -149,7 +149,7 @@ exports.add_login = async (req, res) => {
       username: req.body.username,
       password: req.body.password,
       url: req.body.url,
-      notes: req.body.notes,
+      note: req.body.note,
     });
     const result = await item.save().catch((err) => {
       res.status(500).json({ error: err, status: 500 });
@@ -168,7 +168,8 @@ exports.add_card = async (req, res) => {
       name: req.body.name,
       cardholderName: req.body.cardholdername,
       cardNumber: req.body.cardnumber,
-      expirationMonth: req.body.expirationonth,
+      brand: req.body.brand,
+      expirationMonth: req.body.expirationMonth,
       expirationYear: req.body.expirationYear,
       cvv: req.body.cvv,
       note: req.body.note,
@@ -182,5 +183,16 @@ exports.add_card = async (req, res) => {
     }
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
+  }
+};
+
+exports.get_items = async (req, res) => {
+  const user = await User.findOne({
+    _id: req.body.id,
+  });
+  if (user) {
+    const logins = await Logins.find({ user: user._id });
+    const cards = await Cards.find({ user: user._id });
+    return res.status(200).json({ logins, cards, status: 200 });
   }
 };

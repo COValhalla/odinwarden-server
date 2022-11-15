@@ -17,7 +17,9 @@ const LoginSchema = new Schema({
     required: true,
   },
   url: [String],
-  notes: { String },
+  note: {
+    type: String,
+  },
 });
 
 module.exports = Items = mongoose.model('Logins', LoginSchema);
