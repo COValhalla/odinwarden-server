@@ -19,13 +19,13 @@ router.post('/verify', auth_controller.verify);
 router.post('/hint', auth_controller.hint);
 
 // POST for adding login
-router.post('/add/item', auth_controller.add_login);
+router.post('/add/login', auth_controller.add_login);
 
 // PUT for updating login
-router.put('/update/item', auth_controller.update_login);
+router.put('/update/login', auth_controller.update_login);
 
 // DELETE for deleting login
-router.delete('/delete/item', auth_controller.delete_login);
+router.delete('/delete/login', auth_controller.delete_login);
 
 // POST for adding card
 router.post('/add/card', auth_controller.add_card);
