@@ -20,7 +20,6 @@ const UserSchema = new Schema({
   },
   hint: {
     type: String,
-    required: true,
   },
   logins: {
     type: Schema.Types.ObjectId,
