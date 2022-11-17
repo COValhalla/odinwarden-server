@@ -289,9 +289,12 @@ exports.get_items = async (req, res) => {
   const user = await User.findOne({
     _id: req.body.id,
   });
+
   if (user) {
     const logins = await Logins.find({ user: user._id });
     const cards = await Cards.find({ user: user._id });
     return res.status(200).json({ logins, cards, status: 200 });
   }
+
+  res.status(400).json({ error: 'Email not found.', status: 400 });
 };

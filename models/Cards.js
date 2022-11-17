@@ -33,6 +33,15 @@ const CardSchema = new Schema({
   note: {
     type: String,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    immutable: true,
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 module.exports = Items = mongoose.model('Cards', CardSchema);
