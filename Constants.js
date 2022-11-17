@@ -1,6 +1,9 @@
 const prod = {
   url: {
-    API_URL: ['https://odinwarden.netlify.app/'],
+    API_URL: [
+      'https://odinwarden.netlify.app',
+      'https://odinwarden-server.herokuapp.com',
+    ],
   },
 };
 const dev = {
