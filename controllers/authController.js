@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const User = require('../models/User');
 const Cards = require('../models/Cards');
 const Logins = require('../models/Logins');
@@ -5,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const { body, validationResult } = require('express-validator');
 
 exports.login = (req, res, next) => {
   passport.authenticate(
@@ -39,69 +41,76 @@ exports.login = (req, res, next) => {
 
 exports.logout = (req, res) => {};
 
-exports.register = async (req, res, next) => {
-  // Confirm unique email
-  const user = await User.findOne({ email: req.body.email.toLowerCase() });
+exports.register = [
+  body('email').isEmail(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  if (user) {
-    res.status(403).json({ error: 'Email already exists.', status: 403 });
-  } else {
-    const hashedPassword = bcrypt.hashSync(
-      req.body.password,
-      bcrypt.genSaltSync(10),
-      (err, hashedPassword) => {
-        if (err) {
-          return next(err);
-        }
-        // return hashed password
-        return hashedPassword;
-      },
-    );
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
 
-    // Create new user
-    const newUser = new User({
-      email: req.body.email.toLowerCase(),
-      password: hashedPassword,
-      name: req.body.name,
-      hint: req.body.passwordHint,
-    });
-
-    // Save new user
-    try {
-      const result = await newUser.save();
-      // Authenticates newly created user
-      passport.authenticate(
-        'local',
-        { session: false },
-        function (err, user, info) {
+    if (user) {
+      res.status(403).json({ error: 'Email already exists.', status: 403 });
+    } else {
+      const hashedPassword = bcrypt.hashSync(
+        req.body.password,
+        bcrypt.genSaltSync(10),
+        (err, hashedPassword) => {
           if (err) {
             return next(err);
           }
-          if (!user) {
-            return res.status(400).json({
-              message: info.message,
-              status: 400,
-            });
-          }
-          req.logIn(user, { session: false }, function (err) {
+          // return hashed password
+          return hashedPassword;
+        },
+      );
+
+      // Create new user
+      const newUser = new User({
+        email: req.body.email.toLowerCase(),
+        password: hashedPassword,
+        name: req.body.name,
+        hint: req.body.passwordHint,
+      });
+
+      // Save new user
+      try {
+        const result = await newUser.save();
+        // Authenticates newly created user
+        passport.authenticate(
+          'local',
+          { session: false },
+          function (err, user, info) {
             if (err) {
               return next(err);
             }
-            // Create JWT
-            const token = jwt.sign(
-              { id: user._id, username: user.username },
-              process.env.JWT_SECRET,
-              { expiresIn: '1h' },
-            );
-            return res.status(200).json({ user, token, status: 200 });
-          });
-        },
-      )(req, res, next);
-    } catch (err) {
-      return next(err);
+            if (!user) {
+              return res.status(400).json({
+                message: info.message,
+                status: 400,
+              });
+            }
+            req.logIn(user, { session: false }, function (err) {
+              if (err) {
+                return next(err);
+              }
+              // Create JWT
+              const token = jwt.sign(
+                { id: user._id, username: user.username },
+                process.env.JWT_SECRET,
+                { expiresIn: '1h' },
+              );
+              return res.status(200).json({ user, token, status: 200 });
+            });
+          },
+        )(req, res, next);
+      } catch (err) {
+        return next(err);
+      }
     }
-  }
-};
+  },
+];
 
 exports.verify = (req, res) => {
   const token = req.body.token;
@@ -114,7 +123,12 @@ exports.verify = (req, res) => {
   });
 };
 
-exports.hint = async (req, res) => {
+exports.hint =[body('email').isEmail(),  async (req, res) => {  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const user = await User.findOne({ email: req.body.email.toLowerCase() });
   if (user) {
     let transporter = nodemailer.createTransport({
@@ -140,7 +154,7 @@ exports.hint = async (req, res) => {
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
   }
-};
+}];
 
 exports.add_login = async (req, res) => {
   const user = await User.findOne({ _id: req.body.id });
@@ -160,7 +174,7 @@ exports.add_login = async (req, res) => {
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
   }
-};
+}]
 
 exports.update_login = async (req, res) => {
   const user = await User.findOne({
