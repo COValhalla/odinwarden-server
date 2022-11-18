@@ -10,6 +10,7 @@ const session = require('express-session');
 var passport = require('passport');
 var config = require('./Constants');
 var rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 var corsOptions = {
   origin: function (origin, callback) {
@@ -45,6 +46,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use(helmet());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
