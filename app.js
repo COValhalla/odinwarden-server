@@ -34,7 +34,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 var app = express();
 
 app.set('trust proxy', 1);
-app.get('/ip', (request, response) => response.send(request.ip));
 
 // Rate limiter
 const limiter = rateLimit({
