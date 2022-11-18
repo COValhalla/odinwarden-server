@@ -8,6 +8,7 @@ var passport = require('passport');
 require('./passport');
 require('dotenv').config();
 var config = require('./Constants');
+var rateLimit = require('express-rate-limit');
 
 var corsOptions = {
   origin: function (origin, callback) {
@@ -32,6 +33,15 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var app = express();
 
+// Rate limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
