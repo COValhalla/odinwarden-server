@@ -123,38 +123,41 @@ exports.verify = (req, res) => {
   });
 };
 
-exports.hint =[body('email').isEmail(),  async (req, res) => {  
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+exports.hint = [
+  body('email').isEmail(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  const user = await User.findOne({ email: req.body.email.toLowerCase() });
-  if (user) {
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.MAIL_USERNAME,
-        pass: process.env.MAIL_PASSWORD,
-      },
-    });
-    let mailOptions = {
-      from: 'no-reply@odinwarden.com',
-      to: user.email,
-      subject: 'Odinwarden Password Hint',
-      text: `Your password hint is: ${user.hint}`,
-    };
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        return res.status(500).json({ error: err, status: 500 });
-      } else {
-        return res.status(200).json({ info, status: 200 });
-      }
-    });
-  } else {
-    res.status(400).json({ error: 'Email not found.', status: 400 });
-  }
-}];
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    if (user) {
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      });
+      let mailOptions = {
+        from: 'no-reply@odinwarden.com',
+        to: user.email,
+        subject: 'Odinwarden Password Hint',
+        text: `Your password hint is: ${user.hint}`,
+      };
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          return res.status(500).json({ error: err, status: 500 });
+        } else {
+          return res.status(200).json({ info, status: 200 });
+        }
+      });
+    } else {
+      res.status(400).json({ error: 'Email not found.', status: 400 });
+    }
+  },
+];
 
 exports.add_login = async (req, res) => {
   const user = await User.findOne({ _id: req.body.id });
@@ -174,7 +177,7 @@ exports.add_login = async (req, res) => {
   } else {
     res.status(400).json({ error: 'Email not found.', status: 400 });
   }
-}]
+};
 
 exports.update_login = async (req, res) => {
   const user = await User.findOne({
