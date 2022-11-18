@@ -48,7 +48,7 @@ exports.register = async (req, res, next) => {
   } else {
     const hashedPassword = bcrypt.hashSync(
       req.body.password,
-      10,
+      bcrypt.genSaltSync(10),
       (err, hashedPassword) => {
         if (err) {
           return next(err);
